@@ -1,0 +1,25 @@
+{"empid":1, "empname":"Siya", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":2, "empname":"Swayam", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":1300000}
+{"empid":3, "empname":"Jeet", "dept":"IT", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":1670000}
+{"empid":4, "empname":"Priya", "dept":"CC", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145040}
+{"empid":5, "empname":"AA", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":1500330}
+{"empid":6, "empname":"AB", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":7, "empname":"AC", "dept":"DS", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":170000}
+{"empid":8, "empname":"AD", "dept":"HR", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+{"empid":9, "empname":"AE", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":10, "empname":"AF", "dept":"DS", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":11, "empname":"AG", "dept":"IT", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":170000}
+{"empid":12, "empname":"AH", "dept":"DS", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+{"empid":13, "empname":"DG", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":14, "empname":"DA", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":15, "empname":"DB", "dept":"IT", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":17005500}
+{"empid":16, "empname":"DC", "dept":"CC", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+{"empid":17, "empname":"DF", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":18, "empname":"DM", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":19, "empname":"PA", "dept":"IT", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":170000}
+{"empid":20, "empname":"PB", "dept":"CC", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+{"empid":21, "empname":"PO", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":22, "empname":"PL", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":23, "empname":"AS", "dept":"DS", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":170000}
+{"empid":24, "empname":"MA", "dept":"CC", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+{"empid":25, "empname":"TT", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
