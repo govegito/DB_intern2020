@@ -18,5 +18,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/spline-bundle-2_2-0.3.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/spline-web-0.3.9-exec-war.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

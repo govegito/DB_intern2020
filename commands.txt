@@ -1,0 +1,9 @@
+// HDFS COMMANDS
+hdfs.cmd namenode -format
+start-dfs.cmd && start-yarn.cmd
+hdfs dfs -mkdir /input
+hdfs dfs -put C:\Users\Administrator\Desktop\employee_set1.json /input
+localhost:50070
+
+// spline command
+java -jar spline-web-0.3.9-exec-war.jar -Dspline.mongodb.url=mongodb://localhost:27017/spline_db
