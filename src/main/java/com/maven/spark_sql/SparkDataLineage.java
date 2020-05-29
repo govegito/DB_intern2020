@@ -1,4 +1,6 @@
 package com.maven.spark_sql;
+
+import java.util.*;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
@@ -6,6 +8,55 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import static org.apache.spark.sql.functions.col;
 import za.co.absa.spline.core.SparkLineageInitializer;
+
+class JOIN_INITIALIZER {
+
+	public Dataset<Row> sqlDF;
+	public Dataset<Row> Data_empid;
+	public Dataset<Row> Non_cash_IT_Underpaid;
+
+	public JOIN_INITIALIZER(Dataset<Row> Data_empid, Dataset<Row> sqlDF) {
+
+		this.sqlDF = sqlDF;
+		this.Data_empid = Data_empid;
+
+	}
+
+	public Dataset<Row> join_Dataset() {
+
+		Non_cash_IT_Underpaid = sqlDF.alias("a")
+				.join(Data_empid.alias("b"), sqlDF.col("empid").equalTo(Data_empid.col("empid")), "inner")
+				.select("a.Non_cash_benefits", "a.empid");
+		// Non_cash_IT_Underpaid.show();
+
+		return Non_cash_IT_Underpaid;
+
+	}
+
+}
+
+class SELF_QUERY {
+
+	public Dataset<Row> sqlDF_with_salary;
+	public SparkSession spark;
+
+	public SELF_QUERY(Dataset<Row> sqlDF_with_salary, SparkSession spark) {
+
+		this.sqlDF_with_salary = sqlDF_with_salary;
+		this.spark = spark;
+	}
+
+	public Dataset<Row> run_query() {
+		sqlDF_with_salary.createOrReplaceTempView("employees");
+		Scanner sc = new Scanner(System.in);
+		String SQLStatmentUser = sc.nextLine();
+		Dataset<Row> SELF_query = spark.sql(SQLStatmentUser);
+		sc.close();
+		return SELF_query;
+
+	}
+
+}
 
 public class SparkDataLineage {
 	public static void main(String[] args) {
@@ -27,7 +78,7 @@ public class SparkDataLineage {
 		SparkLineageInitializer.enableLineageTracking(spark);
 
 		/* ESTABLISHING CONNECTION WITH THE HADOOP FILE SYSTEM */
-		Dataset<Row> df = spark.read().json("hdfs://localhost:9000/input/employee_set1.json");
+		Dataset<Row> df = spark.read().json("hdfs://localhost:9000/employee_set1.json");
 
 		/*
 		 * REGISTERING USER DEFINED FUNCTION FOR SUMMATION OF SUBFIELD DATA IN
@@ -77,7 +128,7 @@ public class SparkDataLineage {
 
 		// table for employees data underpaid wrt the median salary
 		Dataset<Row> Underpaid_median = sqlDF_with_salary.select("empid", "dept", "job_title", "salary")
-				.where(sqlDF_with_salary.col("salary").leq(median_salary));
+				.where(sqlDF_with_salary.col("salary").lt(median_salary));
 
 		System.out.print("\n OverPaid in the Company : \n\n");
 		Overpaid_median.show(); // write it to a file
@@ -127,17 +178,23 @@ public class SparkDataLineage {
 		 * these employees , inner join with the empid table
 		 */
 
-		Dataset<Row> Non_cash_IT_Underpaid = sqlDF_with_salary.alias("a")
-				.join(Data_empid.alias("b"), sqlDF_with_salary.col("empid").equalTo(Data_empid.col("empid")), "inner")
-				.select("a.Non_cash_benefits", "a.empid");
-
+		JOIN_INITIALIZER join_obj = new JOIN_INITIALIZER(Data_empid, sqlDF_with_salary);
+		Dataset<Row> Non_cash_IT_Underpaid = join_obj.join_Dataset();
 		Non_cash_IT_Underpaid.show();
+
 		/* WRITING OUT THE DATA OF UNDERPAID IT TO THE FILE SYSTEM */
 		Non_cash_IT_Underpaid.write().json("hdfs://localhost:9000/Non_cash_IT_Underpaid");
+
+		// INTERFACE to execute the user query
+		SELF_QUERY give_query = new SELF_QUERY(sqlDF_with_salary, spark);
+		Dataset<Row> SELF_query = give_query.run_query();
+		SELF_query.show();
+
+		/* WRITING OUT THE DATA OF USER QUERY TO THE FILE SYSTEM */
+		SELF_query.write().json("hdfs://localhost:9000/Self_Query");
 
 		/* ENDING THE SPARKS SESSIONS */
 		spark.stop();
 
 	}
 }
-
