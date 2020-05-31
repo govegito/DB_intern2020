@@ -191,7 +191,7 @@ public class SparkDataLineage {
 		EMPID_VS_DEPT_VS_SALARY.show();
 
 		/* WRITING THE DATASET TO HDFS */
-		EMPID_VS_DEPT_VS_SALARY.write().json("hdfs://localhost:9000/output");
+		EMPID_VS_DEPT_VS_SALARY.write().json("hdfs://localhost:9000/Main_data");
 
 		/* calculates total number of entries (employees) */
 		long total_employees = sqlDF_with_salary.count();
