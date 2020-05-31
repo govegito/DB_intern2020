@@ -9,6 +9,95 @@ import org.apache.spark.sql.Row;
 import static org.apache.spark.sql.functions.col;
 import za.co.absa.spline.core.SparkLineageInitializer;
 
+class SQL_Query_Interface {
+
+	public Dataset<Row> sqlDF_with_salary;
+	public Dataset<Row> less_thanEQ_12;
+	public Dataset<Row> grt_than_12;
+	public SparkSession spark;
+
+	public SQL_Query_Interface(Dataset<Row> SQLDF, SparkSession spark) {
+
+		sqlDF_with_salary = SQLDF;
+		this.spark = spark;
+		sqlDF_with_salary.createOrReplaceTempView("employee");
+		less_thanEQ_12 = spark.sql("SELECT * FROM employee WHERE years_of_experience<=12");
+		grt_than_12 = spark.sql("SELECT * FROM employee WHERE years_of_experience>12 ");
+		System.out.println("\nLESS THAN 12 YEARS OF EXPERIENCE  : \n");
+		less_thanEQ_12.show();
+		System.out.println("\nMORE THAN 12 YEARS OF EXPERIENCE  : \n");
+		grt_than_12.show();
+
+	}
+
+	public void Execute_query_three_high() {
+
+		less_thanEQ_12.createOrReplaceTempView("lessEmployee");
+		grt_than_12.createOrReplaceTempView("grtEmployee");
+
+		/* GET THREE HIGHEST SALARY FROM LESS THAN DATA */
+
+		Dataset<Row> result_From_less = spark.sql(
+				"select * from lessEmployee where salary in (select distinct salary from lessEmployee order by salary desc) LIMIT 3");
+		Dataset<Row> result_From_high = spark.sql(
+				"select * from grtEmployee where salary in (select distinct salary from grtEmployee order by salary desc) LIMIT 3");
+		result_From_less.show();
+		result_From_high.show();
+
+	}
+
+	public Dataset<Row> getEmployeesPune() {
+
+		// Calculating the net salary
+
+		spark.sqlContext().udf().register("get_city", (String str) -> {
+			return (str);
+		}, DataTypes.StringType);
+
+		spark.sqlContext().udf().register("get_state", (String str) -> {
+			return (str);
+		}, DataTypes.StringType);
+
+		/*
+		 * RETURN UNION OF THE EMPLOYEES FROM PUNE IN BOTH THE TABLES : LESS
+		 * THAN AND GRT THAN WORK EXP
+		 */
+
+		Dataset<Row> result;
+
+		Dataset<Row> sqlDF_with_address_less = less_thanEQ_12.withColumn("City",
+				functions.callUDF("get_city", less_thanEQ_12.col("address.city")));
+
+		sqlDF_with_address_less = sqlDF_with_address_less.withColumn("State",
+				functions.callUDF("get_state", less_thanEQ_12.col("address.state")));
+
+		Dataset<Row> sqlDF_with_address_grt = grt_than_12.withColumn("State",
+				functions.callUDF("get_state", grt_than_12.col("address.state")));
+
+		sqlDF_with_address_grt = sqlDF_with_address_grt.withColumn("City",
+				functions.callUDF("get_city", less_thanEQ_12.col("address.city")));
+
+		Dataset<Row> result_less_than = sqlDF_with_address_less.select("empid", "dept", "salary", "City", "State");
+		Dataset<Row> result_grt_than = sqlDF_with_address_grt.select("empid", "dept", "salary", "City", "State");
+
+		result_less_than.show();
+		result_grt_than.show();
+		result_less_than.createOrReplaceTempView("lessThan");
+		result_grt_than.createOrReplaceTempView("grtThan");
+
+		Dataset<Row> result_less = spark.sql("select * from lessThan where City='Pune' ");
+		Dataset<Row> result_grt = spark.sql("select * from grtThan where City='Pune' ");
+
+		result = result_grt.union(result_less);
+		result.show();
+
+		result.write().json("hdfs://localhost:9000/Employees_Pune");
+
+		return result;
+	}
+
+}
+
 class JOIN_INITIALIZER {
 
 	public Dataset<Row> sqlDF;
@@ -185,12 +274,16 @@ public class SparkDataLineage {
 		/* WRITING OUT THE DATA OF UNDERPAID IT TO THE FILE SYSTEM */
 		Non_cash_IT_Underpaid.write().json("hdfs://localhost:9000/Non_cash_IT_Underpaid");
 
+		/* INTERFACE FOR SQL QUERY */
+		SQL_Query_Interface interface_obj = new SQL_Query_Interface(sqlDF_with_salary, spark);
+		interface_obj.Execute_query_three_high();
+		Dataset<Row> Employees_Pune = interface_obj.getEmployeesPune();
+		Employees_Pune.show();
+
 		// INTERFACE to execute the user query
 		SELF_QUERY give_query = new SELF_QUERY(sqlDF_with_salary, spark);
 		Dataset<Row> SELF_query = give_query.run_query();
 		SELF_query.show();
-
-		/* WRITING OUT THE DATA OF USER QUERY TO THE FILE SYSTEM */
 		SELF_query.write().json("hdfs://localhost:9000/Self_Query");
 
 		/* ENDING THE SPARKS SESSIONS */
