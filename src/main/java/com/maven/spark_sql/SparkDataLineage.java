@@ -158,7 +158,6 @@ public class SparkDataLineage {
 		 * lineage Tracking
 		 */
 		System.setProperty("spline-mode", "BEST_EFFORT");
-		System.setProperty("spline.producer.url", "http://localhost:8080/producer");
 		System.setProperty("spline.persistence.factory", "za.co.absa.spline.persistence.mongo.MongoPersistenceFactory");
 		System.setProperty("spline.mongodb.url", "mongodb://localhost:27017/spline_db");
 		System.setProperty("spline.mongodb.name", "spline_db");
@@ -167,7 +166,7 @@ public class SparkDataLineage {
 		SparkLineageInitializer.enableLineageTracking(spark);
 
 		/* ESTABLISHING CONNECTION WITH THE HADOOP FILE SYSTEM */
-		Dataset<Row> df = spark.read().json("hdfs://localhost:9000/employee_set1.json");
+		Dataset<Row> df = spark.read().json("hdfs://localhost:9000/input/employee_set1.json");
 
 		/*
 		 * REGISTERING USER DEFINED FUNCTION FOR SUMMATION OF SUBFIELD DATA IN
